@@ -1,7 +1,11 @@
 package com.Entities;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.validator.constraints.UniqueElements;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +23,7 @@ public class User {
 	@NotNull
 	private String name;
 	@Email
+	@Column(unique = true)
 	private String email;
 	@Size(min = 3,max = 32)
 	private String password;
