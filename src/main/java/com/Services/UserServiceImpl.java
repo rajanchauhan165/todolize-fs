@@ -1,33 +1,61 @@
 package com.Services;
-
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.Entities.Tasks;
 import com.Entities.User;
 import com.Exceptions.UserException;
+import com.Repository.TaskRepo;
+import com.Repository.UserRepo;
 
+@Service
 public class UserServiceImpl implements UserService{
+	
+	@Autowired
+	private UserRepo userRepo;
+	
+	@Autowired
+	private TaskRepo taskRepo;
 
 	@Override
 	public User createUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		return userRepo.save(user);
 	}
 
 	@Override
 	public Tasks createTask(String email, Tasks task) throws UserException {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<User> extUser = userRepo.findByEmail(email);
+		if(extUser.isPresent()) {
+			task.setUser(extUser.get());
+			return taskRepo.save(task);
+		}
+		else {
+			throw new UserException("User not found with email "+email);
+		}
 	}
 
 	@Override
 	public User deleteUser(String email, String password) throws UserException {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<User> extUser = userRepo.findByEmail(email);
+		if(extUser.isPresent()) {
+			if(extUser.get().getPassword().equals(password)) {
+				userRepo.delete(extUser.get());
+				return extUser.get();
+			}
+			else {
+				throw new UserException("Wrong Password");
+			}
+		}
+		else {
+			throw new UserException("User do not exist");
+		}
 	}
 
 	@Override
 	public Tasks deleteTask(int taskId) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Tasks> tasks = taskRepo.findById(taskId);
+		taskRepo.delete(tasks.get());
+		return tasks.get();
 	}
 
 }
