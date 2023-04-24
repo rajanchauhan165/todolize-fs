@@ -19,49 +19,11 @@ public class UserServiceImpl implements UserService{
 	private TaskRepo taskRepo;
 
 	@Override
-	public User createUser(User user) {
-		return userRepo.save(user);
+	public String registerUser(User user) throws UserException {
+		userRepo.save(user);
+		return "reg";
 	}
 
-	@Override
-	public Tasks createTask(String email, Tasks task) throws UserException {
-		Optional<User> extUser = userRepo.findByEmail(email);
-		if(extUser.isPresent()) {
-			task.setUser(extUser.get());
-			return taskRepo.save(task);
-		}
-		else {
-			throw new UserException("User not found with email "+email);
-		}
-	}
-
-	@Override
-	public User deleteUser(String email, String password) throws UserException {
-		Optional<User> extUser = userRepo.findByEmail(email);
-		if(extUser.isPresent()) {
-			if(extUser.get().getPassword().equals(password)) {
-				userRepo.delete(extUser.get());
-				return extUser.get();
-			}
-			else {
-				throw new UserException("Wrong Password");
-			}
-		}
-		else {
-			throw new UserException("User do not exist");
-		}
-	}
-
-	@Override
-	public Tasks deleteTask(int taskId) {
-		Optional<Tasks> tasks = taskRepo.findById(taskId);
-		taskRepo.delete(tasks.get());
-		return tasks.get();
-	}
-
-	@Override
-	public List<User> getAllUser() {
-		return userRepo.findAll();
-	}
+	
 
 }
